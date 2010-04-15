@@ -9,7 +9,6 @@ import os
 import sys
 import logging
 import ConfigParser
-import platform
 
 # Set up cookie jar paths
 def _get_firefox_profile_dir (path):
@@ -50,7 +49,6 @@ def _get_firefox_nt_profile_dir ():
     return _get_firefox_profile_dir(os.path.join(result, r'Mozilla\Firefox\Profiles'))
 
 def _get_firefox_posix_profile_dir ():
-
     return _get_firefox_profile_dir(os.path.expanduser(r'~/.mozilla/firefox'))
 
 def _get_firefox_mac_profile_dir ():
@@ -60,27 +58,13 @@ def _get_firefox_mac_profile_dir ():
         result = _get_firefox_profile_dir(os.path.expanduser(r'~/Library/Application Support/Firefox/Profiles'))
     return result
 
-def _get_firefox_cygwin_profile_dir():
-
-    cmd=["cygpath","-u",os.environ["APPDATA"].strip()]
-    appdata=os.popen2(cmd)[1].read()
-
-    return _get_firefox_profile_dir(os.path.join(appdata.strip(),"Mozilla","Firefox"))
-
-
-
 FIREFOX_COOKIE_JARS = {
     'nt': _get_firefox_nt_profile_dir,
     'posix': _get_firefox_posix_profile_dir,
-    'mac': _get_firefox_mac_profile_dir,
-    'cygwin': _get_firefox_cygwin_profile_dir,
+    'mac': _get_firefox_mac_profile_dir
 }
 
 def get_profile_dir():
-
-    if platform.system().startswith("CYGWIN"):
-        return FIREFOX_COOKIE_JARS["cygwin"]()
-
     return FIREFOX_COOKIE_JARS[os.name]()
 
 def get_profile_dir_interactive():
